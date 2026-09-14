@@ -1,0 +1,68 @@
+# ---------------------------------------------------------------
+# WanderSync — repository root
+# Component-specific ignores live in android/.gitignore etc.
+# ---------------------------------------------------------------
+
+# --- IDE ---
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Android / Gradle ---
+.gradle/
+.kotlin/
+build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.keystore
+*.jks
+!debug.keystore
+
+# --- .NET ---
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+.vs/
+artifacts/
+TestResults/
+*.nupkg
+coverage*.json
+coverage*.xml
+
+# --- Azure / infra ---
+.azure/
+*.azurePubxml
+*.publishsettings
+main.parameters.local.json
+
+# --- Secrets — never commit credentials ---
+*.env
+.env.*
+!.env.example
+appsettings.Development.json
+appsettings.Local.json
+*secret*.json
+*credentials*.json
+*service-account*.json
+*.pfx
+*.pem
+*.p12
+
+# --- Node (rules tooling, functions, scripts) ---
+node_modules/
+npm-debug.log*
+
+# --- Logs ---
+*.log
