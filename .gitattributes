@@ -1,0 +1,49 @@
+# Normalize everything to LF in the repository and in the working copy.
+# Without this, Windows checkouts get CRLF and Linux-bound files (gradlew,
+# shell scripts, Dockerfiles) break in CI with "bad interpreter: /bin/sh^M".
+* text=auto eol=lf
+
+# Windows-only scripts genuinely need CRLF.
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# Executed on Linux runners and inside containers — must stay LF.
+gradlew     text eol=lf
+*.sh        text eol=lf
+Dockerfile  text eol=lf
+*.Dockerfile text eol=lf
+
+# Source and config, explicit so nothing is guessed.
+*.kt        text eol=lf
+*.kts       text eol=lf
+*.java      text eol=lf
+*.cs        text eol=lf
+*.csproj    text eol=lf
+*.sln       text eol=crlf
+*.bicep     text eol=lf
+*.bicepparam text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.json      text eol=lf
+*.xml       text eol=lf
+*.md        text eol=lf
+*.toml      text eol=lf
+*.properties text eol=lf
+
+# Binaries — never touched.
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.webp   binary
+*.gif    binary
+*.ico    binary
+*.jar    binary
+*.keystore binary
+*.jks    binary
+*.pdf    binary
+*.woff   binary
+*.woff2  binary
+
+# Generated or vendored — keep them out of diffs and language stats.
+android/gradle/wrapper/gradle-wrapper.jar binary linguist-vendored
