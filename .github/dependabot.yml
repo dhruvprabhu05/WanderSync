@@ -1,8 +1,7 @@
 version: 2
 
-# The Android Studio wizard pinned several AndroidX libraries at 2023 versions
-# while the toolchain around them was current. This exists so that never
-# silently happens again.
+# Grouped so a weekly run produces a handful of reviewable PRs instead of a
+# dozen. Groups follow what actually has to be verified together.
 updates:
   - package-ecosystem: gradle
     directory: /android
@@ -10,23 +9,45 @@ updates:
       interval: weekly
     open-pull-requests-limit: 5
     groups:
+      # AGP, Kotlin and the Gradle wrapper must stay compatible with each other
+      # and with the installed Android Studio. Review these together, and sync
+      # in Studio before merging.
+      android-toolchain:
+        patterns:
+          - 'com.android*'
+          - 'org.jetbrains.kotlin*'
+          - 'gradle-wrapper'
       androidx:
         patterns:
           - 'androidx.*'
-      kotlin:
-        patterns:
-          - 'org.jetbrains.kotlin*'
 
   - package-ecosystem: nuget
     directory: /api
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      # Test-infrastructure bumps can pass CI by silently discovering zero
+      # tests. Check the test count in the CI log before merging these.
+      test-tooling:
+        patterns:
+          - 'xunit*'
+          - 'Microsoft.NET.Test.Sdk'
+          - 'coverlet*'
+          - 'Microsoft.AspNetCore.Mvc.Testing'
+      aspnetcore:
+        patterns:
+          - 'Microsoft.AspNetCore.*'
+          - 'Microsoft.Extensions.*'
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    groups:
+      actions:
+        patterns:
+          - '*'
 
   - package-ecosystem: docker
     directory: /api
