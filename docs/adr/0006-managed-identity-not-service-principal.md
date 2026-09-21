@@ -33,8 +33,20 @@ identity credentials identically.
 Deploy with a user-assigned managed identity, `id-wandersync-deploy`, holding
 federated credentials scoped to:
 
-- `repo:dhruvprabhu05/wandersync:ref:refs/heads/main`
-- `repo:dhruvprabhu05/wandersync:pull_request`
+- `repo:dhruvprabhu05@179248906/WanderSync@1370388608:environment:dev`
+- `repo:dhruvprabhu05@179248906/WanderSync@1370388608:ref:refs/heads/main`
+- `repo:dhruvprabhu05@179248906/WanderSync@1370388608:pull_request`
+
+These use GitHub's ID-pinned subject format, which embeds the numeric owner and
+repository IDs. The first attempt registered name-only subjects
+(`repo:dhruvprabhu05/wandersync:...`) and login failed with `AADSTS700213`:
+GitHub presented the ID form, and the match is exact and case-sensitive. The
+ID form is also the safer one -- if the repository were renamed or deleted and
+the name re-registered by someone else, a name-based subject would trust their
+workflows; an ID-pinned subject cannot be claimed that way.
+
+A job that declares `environment: dev` presents the `environment:` subject, not
+the `ref:` one, which is why the environment credential exists separately.
 
 granted **Contributor on the resource group**, not the subscription.
 
