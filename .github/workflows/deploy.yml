@@ -1,0 +1,108 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'api/**'
+      - 'infra/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+env:
+  IMAGE: ghcr.io/${{ github.repository_owner }}/wandersync-api
+
+jobs:
+  deploy:
+    name: Build and deploy to dev
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # Nothing broken gets deployed. The Docker build does not run tests.
+      - name: Test
+        working-directory: api
+        run: dotnet test --configuration Release
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./api
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # These are identifiers, not credentials. Authentication is OIDC: Azure only
+      # accepts a GitHub-issued token whose subject matches a federated credential
+      # pinned to this repo. There is no secret to store. See docs/adr/0006.
+      - name: Sign in to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy infrastructure
+        id: deploy
+        env:
+          API_IMAGE: ${{ env.IMAGE }}:${{ github.sha }}
+        run: |
+          url=$(az deployment group create \
+            --resource-group rg-wandersync-dev \
+            --name "deploy-${{ github.run_number }}" \
+            --parameters infra/dev.bicepparam \
+            --query "properties.outputs.apiUrl.value" -o tsv)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Smoke test
+        run: |
+          url="${{ steps.deploy.outputs.url }}"
+          echo "deployed to $url"
+          for i in $(seq 1 12); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$url/health/live" || true)
+            if [ "$code" = "200" ]; then
+              echo "healthy after $i attempt(s)"
+              exit 0
+            fi
+            echo "attempt $i: HTTP $code - waiting for cold start"
+            sleep 10
+          done
+          echo "never became healthy"
+          exit 1
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Deployed to dev"
+            echo ""
+            echo "- URL: ${{ steps.deploy.outputs.url }}"
+            echo "- Image: \`${{ env.IMAGE }}:${{ github.sha }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"

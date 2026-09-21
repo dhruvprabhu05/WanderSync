@@ -1,0 +1,34 @@
+version: 2
+
+# The Android Studio wizard pinned several AndroidX libraries at 2023 versions
+# while the toolchain around them was current. This exists so that never
+# silently happens again.
+updates:
+  - package-ecosystem: gradle
+    directory: /android
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      androidx:
+        patterns:
+          - 'androidx.*'
+      kotlin:
+        patterns:
+          - 'org.jetbrains.kotlin*'
+
+  - package-ecosystem: nuget
+    directory: /api
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker
+    directory: /api
+    schedule:
+      interval: weekly
