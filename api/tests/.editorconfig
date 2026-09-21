@@ -1,0 +1,10 @@
+# Analyzer settings scoped to test projects only. The strict rules in
+# api/Directory.Build.props stay fully in force for src/.
+
+[*.cs]
+
+# CA1707 -- "identifiers should not contain underscores" -- exists to keep public
+# API surface clean. Test method names are not API, and the
+# Method_scenario_expectation convention is both standard in .NET and materially
+# more readable in test output than MethodScenarioExpectation.
+dotnet_diagnostic.CA1707.severity = none
