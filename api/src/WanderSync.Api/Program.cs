@@ -46,6 +46,12 @@ builder.Services
         o => !string.IsNullOrWhiteSpace(o.TokenValidationParameters.ValidAudience)
              || o.TokenValidationParameters.ValidAudiences?.Any() == true,
         "Authentication:Schemes:Bearer:ValidAudiences is not configured.")
+    // When options are bound from configuration, ValidateIssuer is only turned
+    // on if ValidIssuers is present. Without this check a missing setting would
+    // silently disable issuer validation.
+    .Validate(
+        o => o.TokenValidationParameters.ValidateIssuer,
+        "Authentication:Schemes:Bearer:ValidIssuers is not configured; issuer validation would be disabled.")
     .ValidateOnStart();
 
 // Deny by default. Every endpoint requires an authenticated caller with a
