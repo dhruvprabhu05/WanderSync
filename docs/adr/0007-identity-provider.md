@@ -25,9 +25,11 @@ block affects one resource type, not the platform.
    `AddJwtBearer()` binds `Authority` and `ValidAudiences` from the
    `Authentication:Schemes:Bearer` configuration section. Changing provider is a
    configuration change.
-2. The development identity tenant is an Entra External ID trial tenant created
-   with a personal Microsoft account. That keeps it outside both the university
-   directory and the student subscription's region policy.
+2. The development identity tenant is an Entra External ID 30-day trial tenant.
+   A trial tenant needs no Azure subscription, so the student subscription's
+   region policy does not apply to it. It was created from the university
+   account. A personal account is added as a second Global Administrator, so
+   access survives that account being deactivated after graduation.
 3. Every endpoint is deny-by-default. A fallback authorization policy requires
    an authenticated caller with a `sub` claim, and anonymous endpoints (health
    probes, ping) opt out explicitly with `AllowAnonymous()`.
