@@ -19,6 +19,12 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // MSAL depends on Microsoft's display-mask library, which is published
+        // only to this feed. Scoped to that one group so nothing else resolves here.
+        maven("https://pkgs.dev.azure.com/MicrosoftDeviceSDK/DuoSDK-Public/_packaging/Duo-SDK-Feed/maven/v1") {
+            name = "Duo-SDK-Feed"
+            content { includeGroup("com.microsoft.device.display") }
+        }
     }
 }
 

@@ -1,0 +1,13 @@
+{
+  "client_id": "cd3ad0c0-92f6-4442-b96e-bf2855d90932",
+  "authorization_user_agent": "DEFAULT",
+  "redirect_uri": "msauth://dev.dhruvprabhu.wandersync/jcW7vTNQ9QFJZdcFMW6GbhMsaJw%3D",
+  "account_mode": "SINGLE",
+  "broker_redirect_uri_registered": true,
+  "authorities": [
+    {
+      "type": "CIAM",
+      "authority_url": "https://wandersync.ciamlogin.com/wandersync.onmicrosoft.com/"
+    }
+  ]
+}
