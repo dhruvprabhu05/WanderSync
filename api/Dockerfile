@@ -18,7 +18,7 @@ RUN dotnet publish src/WanderSync.Api/WanderSync.Api.csproj \
         --no-restore \
         --output /app
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:11.0 AS runtime
 WORKDIR /app
 COPY --from=build /app .
 
