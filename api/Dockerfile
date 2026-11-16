@@ -3,7 +3,7 @@
 # Build context is api/. Built by .github/workflows/deploy.yml and pushed to
 # ghcr.io -- see docs/adr/0005-ghcr-instead-of-acr.md for why not ACR.
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0 AS build
 WORKDIR /src
 
 # Restore before copying sources so a code-only change reuses the cached
